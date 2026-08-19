@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Dashboard | ShopSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="overflow-x-hidden bg-slate-50 text-slate-800 antialiased">
+    <div
+      id="toast"
+      class="pointer-events-none fixed right-4 top-20 z-50 hidden max-w-sm rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-lg"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <div id="order-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+      <div class="relative w-full max-w-md rounded-2xl bg-white p-6">
+        <button id="order-modal-close" type="button" class="absolute right-4 top-4 rounded-md p-1 text-slate-500 hover:bg-slate-100" aria-label="Close order details">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+        </button>
+        <p class="text-xs font-semibold uppercase tracking-wide text-indigo-600">Order details</p>
+        <h2 id="order-modal-title" class="mt-1 text-xl font-bold text-slate-900"></h2>
+        <div id="order-modal-body" class="mt-4 space-y-2 text-sm text-slate-600"></div>
+        <a id="order-modal-link" href="orders.html" class="mt-5 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Open Orders page</a>
+      </div>
+    </div>
+
+    <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+      <div class="relative w-full max-w-md rounded-2xl bg-white p-6">
+        <button id="profile-modal-close" type="button" class="absolute right-4 top-4 rounded-md p-1 text-slate-500 hover:bg-slate-100" aria-label="Close edit profile">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+        </button>
+        <h2 id="profile-modal-title" class="text-xl font-bold text-slate-900">Edit Profile</h2>
+        <p class="mt-1 text-sm text-slate-500">Frontend-only. Changes stay on this page until you refresh.</p>
+        <form id="profile-form" class="mt-4 space-y-3" novalidate>
+          <div>
+            <label for="edit-name" class="mb-1 block text-sm font-medium text-slate-700">Name</label>
+            <input id="edit-name" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+          </div>
+          <div>
+            <label for="edit-email" class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+            <input id="edit-email" type="email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+          </div>
+          <div>
+            <label for="edit-phone" class="mb-1 block text-sm font-medium text-slate-700">Phone</label>
+            <input id="edit-phone" type="tel" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+          </div>
+          <div>
+            <label for="edit-address" class="mb-1 block text-sm font-medium text-slate-700">Address</label>
+            <input id="edit-address" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+          </div>
+          <button type="submit" class="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Save changes</button>
+        </form>
+      </div>
+    </div>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8" aria-label="Main">
+        <a href="index.html" class="flex min-w-0 items-center gap-2">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">S</span>
+          <span class="truncate text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">ShopSphere</span>
+        </a>
+        <ul class="hidden items-center gap-6 text-sm font-medium text-slate-600 lg:flex xl:gap-8">
+          <li><a href="index.html" class="hover:text-indigo-600">Home</a></li>
+          <li><a href="products.html" class="hover:text-indigo-600">Products</a></li>
+          <li><a href="orders.html" class="hover:text-indigo-600">Orders</a></li>
+          <li><a href="cart.html" class="hover:text-indigo-600">Cart</a></li>
+          <li><button type="button" class="nav-profile hover:text-indigo-600">Profile</button></li>
+          <li><button type="button" class="logout-btn hover:text-indigo-600">Logout</button></li>
+        </ul>
+        <div class="flex shrink-0 items-center gap-2">
+          <a id="cart-button" href="cart.html" class="relative rounded-lg p-2 text-slate-700 hover:bg-slate-100" aria-label="Shopping cart">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>
+            <span id="cart-count" class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1 text-[11px] font-bold text-white">0</span>
+          </a>
+          <button id="menu-toggle" type="button" class="rounded-lg p-2 text-slate-700 hover:bg-slate-100 lg:hidden" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu">
+            <svg id="icon-open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <svg id="icon-close" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </nav>
+      <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white lg:hidden">
+        <ul class="flex flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700">
+          <li><a href="index.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Home</a></li>
+          <li><a href="products.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Products</a></li>
+          <li><a href="orders.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Orders</a></li>
+          <li><a href="cart.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Cart</a></li>
+          <li><button type="button" class="nav-profile block w-full rounded-lg px-3 py-2 text-left hover:bg-slate-50">Profile</button></li>
+          <li><button type="button" class="logout-btn block w-full rounded-lg px-3 py-2 text-left hover:bg-slate-50">Logout</button></li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div class="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)]">
+        <aside class="min-w-0">
+          <div class="lg:hidden">
+            <label for="sidebar-select" class="mb-1 block text-xs font-medium text-slate-600">Account menu</label>
+            <select id="sidebar-select" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+              <option value="overview">Dashboard</option>
+              <option value="orders">My Orders</option>
+              <option value="wishlist">Wishlist</option>
+              <option value="cart">Cart</option>
+              <option value="profile">Profile</option>
+              <option value="addresses">Addresses</option>
+              <option value="logout">Logout</option>
+            </select>
+          </div>
+          <nav class="hidden rounded-2xl border border-slate-200 bg-white p-3 lg:block" aria-label="Account">
+            <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Account</p>
+            <ul class="space-y-1 text-sm font-medium">
+              <li><button type="button" class="sidebar-link w-full rounded-lg px-3 py-2 text-left text-white bg-indigo-600" data-panel="overview">Dashboard</button></li>
+              <li><button type="button" class="sidebar-link w-full rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50" data-panel="orders">My Orders</button></li>
+              <li><button type="button" class="sidebar-link w-full rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50" data-panel="wishlist">Wishlist</button></li>
+              <li><a href="cart.html" class="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50">Cart</a></li>
+              <li><button type="button" class="sidebar-link w-full rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50" data-panel="profile">Profile</button></li>
+              <li><button type="button" class="sidebar-link w-full rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50" data-panel="addresses">Addresses</button></li>
+              <li><button type="button" class="logout-btn w-full rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50">Logout</button></li>
+            </ul>
+          </nav>
+        </aside>
+
+        <main class="min-w-0">
+          <section id="panel-overview" class="space-y-6">
+            <div class="rounded-2xl bg-slate-900 px-5 py-6 text-white sm:px-8">
+              <p class="text-sm font-semibold uppercase tracking-widest text-indigo-300">Customer account</p>
+              <h1 id="welcome-title" class="mt-2 text-2xl font-bold sm:text-3xl">Welcome back, John Doe!</h1>
+              <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">This is your ShopSphere dashboard. Track orders, manage your profile, and continue shopping — frontend demo for Experiment 1.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+              <article class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Total Orders</p>
+                <p class="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">12</p>
+              </article>
+              <article class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Pending Orders</p>
+                <p class="mt-2 text-2xl font-bold text-amber-600 sm:text-3xl">2</p>
+              </article>
+              <article class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Delivered Orders</p>
+                <p class="mt-2 text-2xl font-bold text-green-700 sm:text-3xl">9</p>
+              </article>
+              <article class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+                <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Wishlist Items</p>
+                <p class="mt-2 text-2xl font-bold text-indigo-600 sm:text-3xl">5</p>
+              </article>
+            </div>
+
+            <section>
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <h2 class="text-lg font-bold text-slate-900 sm:text-xl">Recent Orders</h2>
+                <a href="orders.html" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View all</a>
+              </div>
+              <div id="recent-orders" class="space-y-3"></div>
+            </section>
+
+            <section id="profile-card" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 class="text-lg font-bold text-slate-900">Profile summary</h2>
+                  <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                    <div><dt class="text-slate-500">Name</dt><dd id="profile-name" class="font-medium text-slate-900">John Doe</dd></div>
+                    <div><dt class="text-slate-500">Email</dt><dd id="profile-email" class="break-all font-medium text-slate-900">john@example.com</dd></div>
+                    <div><dt class="text-slate-500">Phone</dt><dd id="profile-phone" class="font-medium text-slate-900">+91 98765 43210</dd></div>
+                    <div class="sm:col-span-2"><dt class="text-slate-500">Address</dt><dd id="profile-address" class="font-medium text-slate-900">14 FC Road, Shivajinagar, Pune, Maharashtra 411005</dd></div>
+                  </dl>
+                </div>
+                <button id="edit-profile" type="button" class="shrink-0 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Edit Profile</button>
+              </div>
+            </section>
+
+            <section>
+              <h2 class="text-lg font-bold text-slate-900 sm:text-xl">Recommended for you</h2>
+              <div id="recommended-grid" class="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3"></div>
+            </section>
+          </section>
+
+          <section id="panel-orders" class="hidden space-y-4">
+            <h1 class="text-2xl font-bold text-slate-900">My Orders</h1>
+            <p class="text-sm text-slate-600">Dummy customer orders for Experiment 1. Checkout orders also appear on the Orders page.</p>
+            <div id="all-orders" class="space-y-3"></div>
+            <a href="orders.html" class="inline-flex rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Open Orders page</a>
+          </section>
+
+          <section id="panel-wishlist" class="hidden space-y-4">
+            <h1 class="text-2xl font-bold text-slate-900">Wishlist</h1>
+            <p class="text-sm text-slate-600">Saved items are dummy data for this frontend dashboard.</p>
+            <div id="wishlist-grid" class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3"></div>
+          </section>
+
+          <section id="panel-profile" class="hidden">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+              <h1 class="text-2xl font-bold text-slate-900">Profile</h1>
+              <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                <div><dt class="text-slate-500">Name</dt><dd class="profile-name-copy font-medium text-slate-900">John Doe</dd></div>
+                <div><dt class="text-slate-500">Email</dt><dd class="profile-email-copy break-all font-medium text-slate-900">john@example.com</dd></div>
+                <div><dt class="text-slate-500">Phone</dt><dd class="profile-phone-copy font-medium text-slate-900">+91 98765 43210</dd></div>
+                <div class="sm:col-span-2"><dt class="text-slate-500">Address</dt><dd class="profile-address-copy font-medium text-slate-900">14 FC Road, Shivajinagar, Pune, Maharashtra 411005</dd></div>
+              </dl>
+              <button type="button" class="edit-profile-alt mt-5 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Edit Profile</button>
+            </div>
+          </section>
+
+          <section id="panel-addresses" class="hidden space-y-4">
+            <h1 class="text-2xl font-bold text-slate-900">Addresses</h1>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5">
+              <p class="text-xs font-semibold uppercase tracking-wide text-indigo-600">Default shipping</p>
+              <p id="address-block" class="mt-2 text-sm leading-relaxed text-slate-700">John Doe<br />14 FC Road, Shivajinagar<br />Pune, Maharashtra 411005<br />Phone: +91 98765 43210</p>
+              <button type="button" class="edit-profile-alt mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Edit address</button>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <footer class="border-t border-slate-200 bg-slate-900 px-4 py-4 text-center text-xs text-slate-400 sm:text-sm">
+      © 2026 ShopSphere. All rights reserved.
+    </footer>
+    <script type="module" src="/src/dashboard.js"></script>
+  </body>
+</html>

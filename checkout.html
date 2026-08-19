@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout | ShopSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-slate-50 text-slate-800 antialiased">
+    <div id="toast" class="pointer-events-none fixed right-4 top-20 z-50 hidden max-w-sm rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-lg" role="status" aria-live="polite"></div>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Main">
+        <a href="index.html" class="flex items-center gap-2">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">S</span>
+          <span class="text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">ShopSphere</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="index.html" class="hover:text-indigo-600">Home</a></li>
+          <li><a href="products.html" class="hover:text-indigo-600">Products</a></li>
+          <li><a href="cart.html" class="hover:text-indigo-600">Cart</a></li>
+          <li><a href="login.html" class="hover:text-indigo-600">Login</a></li>
+          <li><a href="register.html" class="hover:text-indigo-600">Register</a></li>
+        </ul>
+        <div class="flex items-center gap-2">
+          <a id="cart-button" href="cart.html" class="relative rounded-lg p-2 text-slate-700 hover:bg-slate-100" aria-label="Shopping cart">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>
+            <span id="cart-count" class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1 text-[11px] font-bold text-white">0</span>
+          </a>
+          <button id="menu-toggle" type="button" class="rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu">
+            <svg id="icon-open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <svg id="icon-close" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </nav>
+      <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="flex flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700">
+          <li><a href="index.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Home</a></li>
+          <li><a href="products.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Products</a></li>
+          <li><a href="cart.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Cart</a></li>
+          <li><a href="login.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Login</a></li>
+          <li><a href="register.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Register</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+      <div id="empty-checkout" class="hidden rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <h1 class="text-xl font-bold text-slate-900">Your cart is empty</h1>
+        <p class="mt-2 text-sm text-slate-600">Add items before starting checkout.</p>
+        <a href="products.html" class="mt-5 inline-flex rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Continue Shopping</a>
+      </div>
+
+      <div id="confirm-root" class="hidden mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">Order placed</p>
+        <h1 class="mt-2 text-2xl font-bold text-slate-900">Thank you for shopping with ShopSphere</h1>
+        <p class="mt-3 text-sm text-slate-600">This is a frontend confirmation only. No payment was processed.</p>
+        <div class="mt-6 space-y-2 rounded-xl bg-slate-50 p-4 text-sm">
+          <p>Order ID: <span id="confirm-id" class="font-semibold text-slate-900"></span></p>
+          <p>Total amount: <span id="confirm-total" class="font-semibold text-slate-900"></span></p>
+          <p>Delivery estimate: <span id="confirm-estimate" class="font-semibold text-slate-900"></span></p>
+        </div>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <a href="orders.html" class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">View Orders</a>
+          <a href="products.html" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Continue Shopping</a>
+        </div>
+      </div>
+
+      <div id="checkout-root">
+        <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">Checkout</h1>
+        <p class="mt-1 text-sm text-slate-600">Enter delivery details. Payment is UI-only for Experiment 1.</p>
+
+        <form id="checkout-form" class="mt-8 grid gap-8 lg:grid-cols-3" novalidate>
+          <div class="space-y-6 lg:col-span-2">
+            <section class="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 class="text-lg font-bold text-slate-900">Customer information</h2>
+              <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label for="full-name" class="mb-1 block text-sm font-medium text-slate-700">Full Name</label>
+                  <input id="full-name" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                  <p id="name-error" class="mt-1 text-sm text-red-600" aria-live="polite"></p>
+                </div>
+                <div>
+                  <label for="email" class="mb-1 block text-sm font-medium text-slate-700">Email</label>
+                  <input id="email" type="email" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                  <p id="email-error" class="mt-1 text-sm text-red-600" aria-live="polite"></p>
+                </div>
+                <div>
+                  <label for="phone" class="mb-1 block text-sm font-medium text-slate-700">Phone Number</label>
+                  <input id="phone" type="tel" inputmode="numeric" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                  <p id="phone-error" class="mt-1 text-sm text-red-600" aria-live="polite"></p>
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 class="text-lg font-bold text-slate-900">Shipping address</h2>
+              <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label for="address" class="mb-1 block text-sm font-medium text-slate-700">Address</label>
+                  <input id="address" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                  <p id="address-error" class="mt-1 text-sm text-red-600" aria-live="polite"></p>
+                </div>
+                <div>
+                  <label for="city" class="mb-1 block text-sm font-medium text-slate-700">City</label>
+                  <input id="city" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                  <p id="city-error" class="mt-1 text-sm text-red-600" aria-live="polite"></p>
+                </div>
+                <div>
+                  <label for="state" class="mb-1 block text-sm font-medium text-slate-700">State</label>
+                  <input id="state" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                  <p id="state-error" class="mt-1 text-sm text-red-600" aria-live="polite"></p>
+                </div>
+                <div>
+                  <label for="pin" class="mb-1 block text-sm font-medium text-slate-700">PIN / ZIP Code</label>
+                  <input id="pin" type="text" inputmode="numeric" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                  <p id="pin-error" class="mt-1 text-sm text-red-600" aria-live="polite"></p>
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 class="text-lg font-bold text-slate-900">Delivery option</h2>
+              <div class="mt-4 space-y-3">
+                <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 has-[:checked]:border-indigo-500">
+                  <input type="radio" name="delivery" value="standard" checked class="mt-1" />
+                  <span>
+                    <span class="block font-semibold text-slate-900">Standard Delivery</span>
+                    <span class="text-sm text-slate-600">3–5 business days. Free above ₹499, otherwise ₹49.</span>
+                  </span>
+                </label>
+                <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 p-4 has-[:checked]:border-indigo-500">
+                  <input type="radio" name="delivery" value="express" class="mt-1" />
+                  <span>
+                    <span class="block font-semibold text-slate-900">Express Delivery</span>
+                    <span class="text-sm text-slate-600">1–2 business days. Flat ₹149.</span>
+                  </span>
+                </label>
+              </div>
+            </section>
+
+            <section class="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 class="text-lg font-bold text-slate-900">Payment method</h2>
+              <p class="mt-1 text-sm text-slate-500">UI only. No real payment is collected.</p>
+              <div class="mt-4 space-y-3">
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-4 has-[:checked]:border-indigo-500">
+                  <input type="radio" name="payment" value="cod" />
+                  <span class="font-medium text-slate-900">Cash on Delivery</span>
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-4 has-[:checked]:border-indigo-500">
+                  <input type="radio" name="payment" value="upi" />
+                  <span class="font-medium text-slate-900">UPI</span>
+                </label>
+                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-4 has-[:checked]:border-indigo-500">
+                  <input type="radio" name="payment" value="card" />
+                  <span class="font-medium text-slate-900">Card</span>
+                </label>
+              </div>
+              <p id="payment-error" class="mt-2 text-sm text-red-600" aria-live="polite"></p>
+            </section>
+          </div>
+
+          <aside class="h-fit rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 class="text-lg font-bold text-slate-900">Order summary</h2>
+            <div id="summary-products" class="mt-4 space-y-3"></div>
+            <div class="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm">
+              <div class="flex justify-between"><span class="text-slate-600">Subtotal</span><span id="summary-subtotal">₹0</span></div>
+              <div class="flex justify-between"><span class="text-slate-600">Shipping</span><span id="summary-shipping">₹0</span></div>
+              <div class="flex justify-between"><span class="text-slate-600">Discount</span><span id="summary-discount">₹0</span></div>
+              <div class="flex justify-between border-t border-slate-200 pt-3 text-base"><span class="font-semibold">Grand total</span><span id="summary-total" class="font-bold">₹0</span></div>
+            </div>
+            <button type="submit" class="mt-5 w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Place Order</button>
+            <a href="cart.html" class="mt-3 inline-flex w-full justify-center text-sm font-medium text-slate-600 hover:text-indigo-600">Back to cart</a>
+          </aside>
+        </form>
+      </div>
+    </main>
+
+    <footer class="mt-8 border-t border-slate-200 bg-slate-900 px-4 py-4 text-center text-xs text-slate-400 sm:text-sm">
+      © 2026 ShopSphere. All rights reserved.
+    </footer>
+    <script type="module" src="/src/checkout.js"></script>
+  </body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Products | ShopSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-slate-50 text-slate-800 antialiased">
+    <div
+      id="toast"
+      class="pointer-events-none fixed right-4 top-20 z-50 hidden max-w-sm rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-lg"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Main">
+        <a href="index.html" class="flex items-center gap-2">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">S</span>
+          <span class="text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">ShopSphere</span>
+        </a>
+
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="index.html" class="hover:text-indigo-600">Home</a></li>
+          <li><a href="products.html" class="text-indigo-600">Products</a></li>
+          <li><a href="index.html#categories" class="hover:text-indigo-600">Categories</a></li>
+          <li><a href="login.html" class="hover:text-indigo-600">Login</a></li>
+          <li><a href="register.html" class="hover:text-indigo-600">Register</a></li>
+        </ul>
+
+        <div class="flex items-center gap-2">
+          <a
+            id="cart-button"
+            href="cart.html"
+            class="relative rounded-lg p-2 text-slate-700 hover:bg-slate-100"
+            aria-label="Shopping cart"
+          >
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>
+            <span
+              id="cart-count"
+              class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-600 px-1 text-[11px] font-bold text-white"
+            >0</span>
+          </a>
+
+          <button
+            id="menu-toggle"
+            type="button"
+            class="rounded-lg p-2 text-slate-700 hover:bg-slate-100 md:hidden"
+            aria-controls="mobile-menu"
+            aria-expanded="false"
+            aria-label="Open menu"
+          >
+            <svg id="icon-open" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg id="icon-close" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="flex flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700">
+          <li><a href="index.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Home</a></li>
+          <li><a href="products.html" class="block rounded-lg px-3 py-2 text-indigo-600">Products</a></li>
+          <li><a href="index.html#categories" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Categories</a></li>
+          <li><a href="login.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Login</a></li>
+          <li><a href="register.html" class="block rounded-lg px-3 py-2 hover:bg-slate-50">Register</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+      <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">All Products</h1>
+      <p class="mt-1 text-sm text-slate-600 sm:text-base">Search, filter, and sort the full ShopSphere catalogue.</p>
+
+      <div class="mt-6 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="sm:col-span-2 lg:col-span-1">
+          <label for="search-input" class="mb-1 block text-xs font-medium text-slate-600">Search</label>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="Search by product name"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          />
+        </div>
+        <div>
+          <label for="category-filter" class="mb-1 block text-xs font-medium text-slate-600">Category</label>
+          <select
+            id="category-filter"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          >
+            <option value="All">All</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Home & Living">Home & Living</option>
+            <option value="Books">Books</option>
+            <option value="Sports">Sports</option>
+          </select>
+        </div>
+        <div>
+          <label for="price-filter" class="mb-1 block text-xs font-medium text-slate-600">Price</label>
+          <select
+            id="price-filter"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          >
+            <option value="all">All prices</option>
+            <option value="0-1000">Under ₹1,000</option>
+            <option value="1000-5000">₹1,000 – ₹5,000</option>
+            <option value="5000-15000">₹5,000 – ₹15,000</option>
+            <option value="15000+">Above ₹15,000</option>
+          </select>
+        </div>
+        <div>
+          <label for="sort-select" class="mb-1 block text-xs font-medium text-slate-600">Sort</label>
+          <select
+            id="sort-select"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+          >
+            <option value="default">Default</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating-desc">Rating: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="category-buttons" class="mt-5 flex flex-wrap gap-2"></div>
+      <p id="product-count" class="mt-4 text-sm text-slate-600">Showing 0 products</p>
+
+      <div id="product-grid" class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
+      <p id="empty-state" class="mt-10 hidden text-center text-sm text-slate-500">No products found. Try another search or filter.</p>
+    </main>
+
+    <footer class="mt-8 border-t border-slate-200 bg-slate-900 px-4 py-4 text-center text-xs text-slate-400 sm:text-sm">
+      © 2026 ShopSphere. All rights reserved.
+    </footer>
+
+    <script type="module" src="/src/products-page.js"></script>
+  </body>
+</html>
