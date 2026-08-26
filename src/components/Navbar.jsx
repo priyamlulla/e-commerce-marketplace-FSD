@@ -1,4 +1,10 @@
-export default function Navbar({ cartCount, isMobileMenuOpen, setIsMobileMenuOpen }) {
+import { useCart } from '../context/CartContext.jsx'
+import { useUser } from '../context/UserContext.jsx'
+
+export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
+  const { cartCount } = useCart()
+  const { user, isLoggedIn } = useUser()
+
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Main">
@@ -16,6 +22,13 @@ export default function Navbar({ cartCount, isMobileMenuOpen, setIsMobileMenuOpe
         </ul>
 
         <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 sm:flex">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
+            <span>{user.name}</span>
+            <span className="text-slate-400">•</span>
+            <span>{isLoggedIn ? 'Logged in' : 'Guest'}</span>
+          </div>
+
           <a
             href="cart.html"
             className="relative rounded-lg p-2 text-slate-700 hover:bg-slate-100"

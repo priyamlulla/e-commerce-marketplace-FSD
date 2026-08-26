@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { addToCart, getCartCount } from './cart.js'
 import { products } from './products-data.js'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import CategorySection from './components/CategorySection.jsx'
 import FeaturedProducts from './components/FeaturedProducts.jsx'
 import Footer from './components/Footer.jsx'
+import { useCart } from './context/CartContext.jsx'
 
 const featuredProductIds = [
   'aria-headphones',
@@ -25,19 +25,12 @@ const featuredProducts = featuredProductIds
 export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState('All')
-  const [cartCount, setCartCount] = useState(getCartCount())
   const [toastMessage, setToastMessage] = useState('')
+  const { addToCart } = useCart()
 
   useEffect(() => {
     document.title = 'ShopSphere - Home'
     console.log('Home page loaded using useEffect')
-  }, [])
-
-  useEffect(() => {
-    const syncCartCount = () => setCartCount(getCartCount())
-    syncCartCount()
-    window.addEventListener('storage', syncCartCount)
-    return () => window.removeEventListener('storage', syncCartCount)
   }, [])
 
   useEffect(() => {
@@ -47,8 +40,7 @@ export default function App() {
   }, [toastMessage])
 
   function handleAddToCart(product) {
-    addToCart(product.id)
-    setCartCount(getCartCount())
+    addToCart(product)
     setToastMessage(`${product.name} added to cart`)
   }
 
@@ -74,7 +66,6 @@ export default function App() {
       )}
 
       <Navbar
-        cartCount={cartCount}
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
