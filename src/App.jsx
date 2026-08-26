@@ -29,6 +29,11 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState('')
 
   useEffect(() => {
+    document.title = 'ShopSphere - Home'
+    console.log('Home page loaded using useEffect')
+  }, [])
+
+  useEffect(() => {
     const syncCartCount = () => setCartCount(getCartCount())
     syncCartCount()
     window.addEventListener('storage', syncCartCount)
