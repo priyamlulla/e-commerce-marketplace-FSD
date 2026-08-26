@@ -6,6 +6,7 @@ import CategorySection from './components/CategorySection.jsx'
 import FeaturedProducts from './components/FeaturedProducts.jsx'
 import Footer from './components/Footer.jsx'
 import { useCart } from './context/CartContext.jsx'
+import useDocumentTitle from './hooks/useDocumentTitle.js'
 
 const featuredProductIds = [
   'aria-headphones',
@@ -28,8 +29,9 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState('')
   const { addToCart } = useCart()
 
+  useDocumentTitle('ShopSphere - Home')
+
   useEffect(() => {
-    document.title = 'ShopSphere - Home'
     console.log('Home page loaded using useEffect')
   }, [])
 
