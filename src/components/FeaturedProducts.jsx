@@ -1,6 +1,6 @@
 import ProductCard from './ProductCard'
 
-export default function FeaturedProducts({ products, activeCategory, onCategoryChange, onAddToCart }) {
+export default function FeaturedProducts({ products, activeCategory, onCategoryChange }) {
   const filteredProducts =
     activeCategory === 'All' || activeCategory === 'all'
       ? products
@@ -38,7 +38,7 @@ export default function FeaturedProducts({ products, activeCategory, onCategoryC
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>

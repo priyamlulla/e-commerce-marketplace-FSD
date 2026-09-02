@@ -36,15 +36,19 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    const onProductAdded = (ev) => {
+      const name = ev?.detail?.name || 'Product'
+      setToastMessage(`${name} added to cart`)
+    }
+    window.addEventListener('shopsphere:product-added', onProductAdded)
+    return () => window.removeEventListener('shopsphere:product-added', onProductAdded)
+  }, [])
+
+  useEffect(() => {
     if (!toastMessage) return undefined
     const timer = window.setTimeout(() => setToastMessage(''), 2200)
     return () => window.clearTimeout(timer)
   }, [toastMessage])
-
-  function handleAddToCart(product) {
-    addToCart(product)
-    setToastMessage(`${product.name} added to cart`)
-  }
 
   function handleCategorySelect(category) {
     setActiveCategory(category)
@@ -82,7 +86,6 @@ export default function App() {
           products={featuredProducts}
           activeCategory={activeCategory}
           onCategoryChange={setActiveCategory}
-          onAddToCart={handleAddToCart}
         />
       </main>
 
