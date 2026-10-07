@@ -1,73 +1,99 @@
 const express = require("express");
+const { body, matchedData } = require("express-validator");
 const Product = require("../models/Product");
+const { authenticateToken, authorizeRoles } = require("../middleware/authMiddleware");
+const validateRequest = require("../middleware/validateRequest");
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
-  try {
-    const product = await Product.create(req.body);
-    res.status(201).json(product);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+const validateProduct = [
+  body("name").isString().withMessage("Name must be a string").bail().trim().notEmpty().withMessage("Name is required"),
+  body("price").isFloat({ min: 0 }).withMessage("Price must be a non-negative number").toFloat(),
+  body("category").isString().withMessage("Category must be a string").bail().trim().notEmpty().withMessage("Category is required"),
+  body("description").optional().isString().withMessage("Description must be a string").trim(),
+  body("stock").isInt({ min: 0 }).withMessage("Stock must be a non-negative integer").toInt(),
+];
+
+function validateProductId(req, res, next) {
+  if (!/^[0-9a-f]{24}$/i.test(req.params.id)) {
+    return res.status(400).json({ message: "Invalid product id" });
   }
-});
+
+  return next();
+}
+
+router.post(
+  "/",
+  authenticateToken,
+  authorizeRoles("admin"),
+  validateProduct,
+  validateRequest,
+  async (req, res) => {
+    const product = await Product.create(matchedData(req, { locations: ["body"] }));
+    res.status(201).json(product);
+  }
+);
 
 router.get("/", async (req, res) => {
-  try {
-    const products = await Product.find();
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  const products = await Product.find();
+  res.status(200).json(products);
 });
 
-router.get("/:id", async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
+router.get("/:id", validateProductId, async (req, res) => {
+  const product = await Product.findById(req.params.id);
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (!product) {
+    const error = new Error("Not found");
+    error.statusCode = 404;
+    throw error;
   }
+
+  res.status(200).json(product);
 });
 
-router.put("/:id", async (req, res) => {
-  try {
+router.put(
+  "/:id",
+  authenticateToken,
+  authorizeRoles("admin"),
+  validateProductId,
+  validateProduct,
+  validateRequest,
+  async (req, res) => {
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { $set: matchedData(req, { locations: ["body"] }) },
       { new: true, runValidators: true }
     );
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      const error = new Error("Not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
-});
+);
 
-router.delete("/:id", async (req, res) => {
-  try {
+router.delete(
+  "/:id",
+  authenticateToken,
+  authorizeRoles("admin"),
+  validateProductId,
+  async (req, res) => {
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      const error = new Error("Not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     res.status(200).json({
       message: "Product deleted successfully",
       product,
     });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
-});
+);
 
 module.exports = router;
