@@ -1,7 +1,7 @@
 const express = require("express");
 const { body } = require("express-validator");
 const { registerUser, loginUser, getProfile } = require("../controllers/userController");
-const { authenticateToken } = require("../middleware/authMiddleware");
+const { authenticateToken, authorizeRoles } = require("../middleware/authMiddleware");
 const validateRequest = require("../middleware/validateRequest");
 
 const router = express.Router();
@@ -28,5 +28,19 @@ router.post(
 );
 
 router.get("/profile", authenticateToken, getProfile);
+
+router.get("/dashboard", authenticateToken, (req, res) => {
+  return res.status(200).json({
+    message: "Dashboard access granted",
+    user: req.user,
+  });
+});
+
+router.get("/admin", authenticateToken, authorizeRoles("admin"), (req, res) => {
+  return res.status(200).json({
+    message: "Admin access granted",
+    user: req.user,
+  });
+});
 
 module.exports = router;
