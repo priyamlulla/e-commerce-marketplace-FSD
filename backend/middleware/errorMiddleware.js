@@ -13,7 +13,7 @@ function errorMiddleware(error, req, res, next) {
     statusCode = 409;
   } else if (error.type === "entity.too.large") {
     statusCode = 413;
-  } else if ([400, 401, 403, 404, 409, 413, 429].includes(error.statusCode)) {
+  } else if ([400, 401, 403, 404, 409, 413, 429, 503].includes(error.statusCode)) {
     statusCode = error.statusCode;
   }
 
@@ -25,14 +25,18 @@ function errorMiddleware(error, req, res, next) {
     409: "A resource with these details already exists",
     413: "Request body too large",
     429: "Too many requests",
+    503: "Checkout setup is incomplete. An administrator must prepare the demo database first.",
     500: "Internal server error",
   };
+  const message = error.code !== 11000 && statusCode === 409 && error.message
+    ? error.message
+    : messages[statusCode];
 
   if (statusCode === 500) {
     console.error("Unhandled API error");
   }
 
-  return res.status(statusCode).json({ message: messages[statusCode] });
+  return res.status(statusCode).json({ message });
 }
 
 module.exports = errorMiddleware;

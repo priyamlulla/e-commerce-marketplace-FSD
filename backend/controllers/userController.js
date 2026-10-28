@@ -2,17 +2,31 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+const AUTH_COOKIE = "shopsphere_session";
+const SESSION_DURATION_MS = 60 * 60 * 1000;
+
+function sessionCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === "true",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_DURATION_MS,
+  };
+}
+
 function safeUser(user) {
   return {
     id: user._id.toString(),
     name: user.name,
     email: user.email,
     role: user.role,
+    ...(user.phone ? { phone: user.phone } : {}),
   };
 }
 
 async function registerUser(req, res) {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
   const normalizedEmail = email.toLowerCase().trim();
   const existingUser = await User.findOne({ email: normalizedEmail });
 
@@ -25,6 +39,8 @@ async function registerUser(req, res) {
     name: name.trim(),
     email: normalizedEmail,
     password: hashedPassword,
+    role: "user",
+    ...(phone ? { phone: phone.trim() } : {}),
   });
 
   return res.status(201).json({
@@ -53,7 +69,13 @@ async function loginUser(req, res) {
     { expiresIn: "1h" }
   );
 
-  return res.status(200).json({ token, user: safeUser(user) });
+  res.cookie(AUTH_COOKIE, token, sessionCookieOptions());
+  return res.status(200).json({ user: safeUser(user) });
+}
+
+function logoutUser(req, res) {
+  res.clearCookie(AUTH_COOKIE, sessionCookieOptions());
+  return res.status(204).end();
 }
 
 async function getProfile(req, res) {
@@ -65,7 +87,14 @@ async function getProfile(req, res) {
     throw error;
   }
 
-  return res.status(200).json(safeUser(user));
+  return res.status(200).json({ user: safeUser(user) });
 }
 
-module.exports = { registerUser, loginUser, getProfile };
+module.exports = {
+  AUTH_COOKIE,
+  registerUser,
+  loginUser,
+  logoutUser,
+  getProfile,
+  sessionCookieOptions,
+};

@@ -1,4 +1,4 @@
-import { getProductById, products } from './products-data.js'
+import { getCatalogProducts } from './catalog.js'
 
 let toastTimer
 
@@ -20,10 +20,22 @@ export function showToast(message) {
 
 const ITEMS_KEY = 'shopsphere-cart-items'
 const COUPON_KEY = 'shopsphere-cart-coupon'
-const ORDERS_KEY = 'shopsphere-orders'
-
+const LOCAL_ORDERS_KEY = 'shopsphere-orders'
 function findProduct(productIdOrName) {
-  return getProductById(productIdOrName) || products.find((item) => item.name === productIdOrName)
+  return getCatalogProducts().find((item) => item.id === productIdOrName || item.name === productIdOrName)
+}
+
+function getMaximumQuantity(product) {
+  return product.stockQuantityKnown
+    ? Math.min(10, product.stockQuantity)
+    : 10
+}
+
+function normalizeQuantity(quantity, maximum = 10) {
+  if (maximum < 1) return 0
+  const parsed = Number(quantity)
+  const wholeNumber = Number.isFinite(parsed) ? Math.floor(parsed) : 1
+  return Math.max(1, Math.min(maximum, wholeNumber))
 }
 
 export function getCartItems() {
@@ -47,29 +59,49 @@ export function getCartCount() {
 export function getCartProducts() {
   return getCartItems()
     .map((item) => {
-      const product = getProductById(item.id)
-      if (!product) return null
+      const product = getCatalogProducts().find((candidate) => candidate.id === item.id)
+      if (!product) {
+        return {
+          id: item.id,
+          name: `Unmapped cart item (${item.id})`,
+          category: 'Unmapped',
+          price: null,
+          image: '',
+          stockLabel: 'Quantity unverified',
+          stockQuantity: null,
+          stockQuantityKnown: false,
+          inventoryMode: null,
+          purchasable: false,
+          quantity: item.quantity,
+          lineTotal: null,
+        }
+      }
       return {
         ...product,
         quantity: item.quantity,
         lineTotal: product.price * item.quantity,
+        quantityValid: Number.isInteger(item.quantity)
+          && item.quantity >= 1
+          && item.quantity <= 10
+          && (!product.stockQuantityKnown || item.quantity <= product.stockQuantity),
       }
     })
-    .filter(Boolean)
 }
 
 export function addToCart(productIdOrName, quantity = 1) {
   const product = findProduct(productIdOrName)
-  if (!product || product.stock === 'Out of Stock') return
+  if (!product || product.stockLabel === 'Out of Stock' || product.stock === 'Out of Stock') return
 
-  const qtyToAdd = Math.max(1, Number(quantity) || 1)
+  const maximum = getMaximumQuantity(product)
+  if (maximum < 1) return
+  const qtyToAdd = normalizeQuantity(quantity, maximum)
   const items = getCartItems()
   const existing = items.find((item) => item.id === product.id)
 
   if (existing) {
-    existing.quantity = Math.min(10, existing.quantity + qtyToAdd)
+    existing.quantity = normalizeQuantity(Number(existing.quantity) + qtyToAdd, maximum)
   } else {
-    items.push({ id: product.id, quantity: Math.min(10, qtyToAdd) })
+    items.push({ id: product.id, quantity: qtyToAdd })
   }
 
   saveCartItems(items)
@@ -77,7 +109,11 @@ export function addToCart(productIdOrName, quantity = 1) {
 }
 
 export function setItemQuantity(productId, quantity) {
-  const nextQty = Math.max(1, Math.min(10, Number(quantity) || 1))
+  const product = findProduct(productId)
+  if (!product || product.stockLabel === 'Out of Stock' || product.stock === 'Out of Stock') return
+  const maximum = getMaximumQuantity(product)
+  if (maximum < 1) return
+  const nextQty = normalizeQuantity(quantity, maximum)
   const items = getCartItems().map((item) =>
     item.id === productId ? { ...item, quantity: nextQty } : item,
   )
@@ -91,6 +127,35 @@ export function removeFromCart(productId) {
 export function clearCart() {
   saveCartItems([])
   localStorage.removeItem(COUPON_KEY)
+}
+
+export function getLocalDemoOrders() {
+  const savedOrders = localStorage.getItem(LOCAL_ORDERS_KEY)
+  if (savedOrders === null) return []
+
+  let orders
+  try {
+    orders = JSON.parse(savedOrders)
+  } catch {
+    throw new Error('Saved local orders could not be read. They were left unchanged.')
+  }
+  if (!Array.isArray(orders)) {
+    throw new Error('Saved local orders have an unsupported format. They were left unchanged.')
+  }
+  return orders
+}
+
+export function saveLocalDemoOrder(order) {
+  if (!order?.idempotencyKey) {
+    throw new Error('A checkout request key is required to save this demo order.')
+  }
+
+  const orders = getLocalDemoOrders()
+  const existingOrder = orders.find((savedOrder) => savedOrder.idempotencyKey === order.idempotencyKey)
+  if (existingOrder) return existingOrder
+
+  localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify([order, ...orders]))
+  return order
 }
 
 export function getCoupon() {
@@ -123,25 +188,27 @@ export function getDiscount(subtotal, coupon = getCoupon()) {
 
 export function getCartSummary(method = 'standard') {
   const lines = getCartProducts()
-  const subtotal = lines.reduce((sum, item) => sum + item.lineTotal, 0)
+  const subtotal = lines.reduce((sum, item) => sum + (item.lineTotal || 0), 0)
   const discount = getDiscount(subtotal)
   const shipping = lines.length ? getShippingCost(subtotal, method) : 0
   const total = Math.max(0, subtotal - discount + shipping)
-  return { lines, subtotal, discount, shipping, total, coupon: getCoupon(), method }
-}
-
-export function saveOrder(order) {
-  const orders = getOrders()
-  orders.unshift(order)
-  localStorage.setItem(ORDERS_KEY, JSON.stringify(orders))
-}
-
-export function getOrders() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]')
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
+  return {
+    lines,
+    subtotal,
+    discount,
+    shipping,
+    total,
+    coupon: getCoupon(),
+    method,
+    canCheckout: lines.length > 0 && lines.every((item) =>
+      item.purchasable && Boolean(item.databaseId) && item.quantityValid,
+    ),
+    canPlaceDemoOrder: lines.length > 0 && lines.every((item) =>
+      item.quantityValid
+      && item.stockLabel !== 'Out of Stock'
+      && Number.isFinite(item.price)
+      && Number.isFinite(item.lineTotal),
+    ),
   }
 }
 

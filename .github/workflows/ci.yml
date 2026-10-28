@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - experiment-9
+      - experiment-10
   pull_request:
     branches:
-      - experiment-9
+      - experiment-10
 
 jobs:
   frontend:
