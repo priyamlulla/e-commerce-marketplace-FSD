@@ -4,16 +4,20 @@ const express = require("express");
 const http = require("node:http");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const { rateLimit } = require("express-rate-limit");
 const { Server } = require("socket.io");
+const Order = require("./models/Order");
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
 app.set("trust proxy", 1);
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+app.locals.orderIdempotencyIndexReady = false;
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,https://e-commerce-marketplace-fsd.vercel.app")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -40,20 +44,38 @@ app.use(
       error.statusCode = 403;
       return callback(error);
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "Idempotency-Key"],
   })
 );
 app.use("/api", apiLimiter);
+app.use(cookieParser());
 app.use(express.json());
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/orders", orderRoutes);
 
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
+  .connect(process.env.MONGO_URI, { autoIndex: false })
+  .then(async () => {
     console.log("MongoDB Connected");
+    try {
+      const indexes = await Order.collection.indexes();
+      app.locals.orderIdempotencyIndexReady = indexes.some((index) =>
+        index.unique === true
+        && index.key?.customer === 1
+        && index.key?.idempotencyKey === 1
+        && index.partialFilterExpression?.idempotencyKey?.$type === "string"
+      );
+      if (!app.locals.orderIdempotencyIndexReady) {
+        console.warn("Checkout is disabled until the guarded demo database setup creates its idempotency index.");
+      }
+    } catch {
+      app.locals.orderIdempotencyIndexReady = false;
+      console.warn("Checkout is disabled because the order idempotency index could not be verified.");
+    }
   })
   .catch((error) => {
     console.error("MongoDB connection failed", {

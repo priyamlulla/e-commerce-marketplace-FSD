@@ -9,6 +9,7 @@ const {
   loginUser,
   logoutUser,
   registerUser,
+  sessionCookieOptions,
 } = require("../controllers/userController");
 const { authenticateToken, authorizeRoles } = require("../middleware/authMiddleware");
 
@@ -112,6 +113,25 @@ test("login sets an HttpOnly cookie and returns only safe user details", async (
   assert.equal(response.cookies[AUTH_COOKIE].options.httpOnly, true);
   assert.equal(response.cookies[AUTH_COOKIE].options.sameSite, "lax");
   assert.equal(jwt.verify(response.cookies[AUTH_COOKIE].value, process.env.JWT_SECRET).role, "admin");
+});
+
+test("production session cookies support cross-site HTTPS requests securely", () => {
+  const previousNodeEnv = process.env.NODE_ENV;
+  const previousCookieSecure = process.env.COOKIE_SECURE;
+  process.env.NODE_ENV = "production";
+  delete process.env.COOKIE_SECURE;
+
+  try {
+    const options = sessionCookieOptions();
+    assert.equal(options.httpOnly, true);
+    assert.equal(options.secure, true);
+    assert.equal(options.sameSite, "none");
+  } finally {
+    if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousNodeEnv;
+    if (previousCookieSecure === undefined) delete process.env.COOKIE_SECURE;
+    else process.env.COOKIE_SECURE = previousCookieSecure;
+  }
 });
 
 test("login rejects an invalid password without setting a session", async (t) => {

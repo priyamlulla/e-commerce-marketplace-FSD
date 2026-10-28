@@ -6,10 +6,11 @@ const AUTH_COOKIE = "shopsphere_session";
 const SESSION_DURATION_MS = 60 * 60 * 1000;
 
 function sessionCookieOptions() {
+  const secure = process.env.NODE_ENV === "production" || process.env.COOKIE_SECURE === "true";
   return {
     httpOnly: true,
-    secure: process.env.COOKIE_SECURE === "true",
-    sameSite: "lax",
+    secure,
+    sameSite: secure ? "none" : "lax",
     path: "/",
     maxAge: SESSION_DURATION_MS,
   };

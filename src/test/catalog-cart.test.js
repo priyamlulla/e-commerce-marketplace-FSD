@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { after, afterEach, test } from 'node:test'
 import { products as sourceProducts } from '../products-data.js'
 import { fetchProducts, getCatalogProducts } from '../catalog.js'
+import { apiRequest } from '../api.js'
 import {
   addToCart,
   clearCart,
@@ -40,6 +41,25 @@ async function loadCatalog(databaseProducts = []) {
   })
   return fetchProducts()
 }
+
+test('API requests use the local proxy and include credentials for session cookies', async () => {
+  let requestUrl
+  let requestOptions
+  globalThis.fetch = async (url, options) => {
+    requestUrl = url
+    requestOptions = options
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    })
+  }
+
+  const response = await apiRequest('/health')
+
+  assert.equal(requestUrl, '/api/health')
+  assert.equal(requestOptions.credentials, 'include')
+  assert.deepEqual(response, { ok: true })
+})
 
 test('catalog preserves all 18 original products, five categories, descriptions, images, and labels', async () => {
   const catalog = await loadCatalog()

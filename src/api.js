@@ -1,3 +1,5 @@
+const API_BASE_URL = import.meta.env?.VITE_API_URL?.trim().replace(/\/+$/, '') || ''
+
 export async function apiRequest(path, options = {}) {
   const headers = new Headers(options.headers)
   let body = options.body
@@ -7,11 +9,11 @@ export async function apiRequest(path, options = {}) {
     body = JSON.stringify(body)
   }
 
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${API_BASE_URL}/api${path}`, {
     ...options,
     body,
     headers,
-    credentials: 'same-origin',
+    credentials: 'include',
   })
 
   if (response.status === 204) return null
