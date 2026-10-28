@@ -10,6 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
+app.set("trust proxy", 1);
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
@@ -52,8 +53,12 @@ mongoose
   .then(() => {
     console.log("MongoDB Connected");
   })
-  .catch(() => {
-    console.error("MongoDB connection failed");
+  .catch((error) => {
+    console.error("MongoDB connection failed", {
+      name: error.name,
+      code: error.code,
+      codeName: error.codeName,
+    });
   });
 
 app.get("/", (req, res) => {
@@ -70,6 +75,6 @@ app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
