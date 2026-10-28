@@ -24,6 +24,7 @@ export default defineConfig({
         checkout: resolve(root, 'checkout.html'),
         orders: resolve(root, 'orders.html'),
         dashboard: resolve(root, 'dashboard.html'),
+        chat: resolve(root, 'chat.html'),
       },
     },
   },

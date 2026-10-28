@@ -1,10 +1,12 @@
 require("dotenv").config();
 
 const express = require("express");
+const http = require("node:http");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 const { rateLimit } = require("express-rate-limit");
+const { Server } = require("socket.io");
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
 const errorMiddleware = require("./middleware/errorMiddleware");
@@ -74,7 +76,58 @@ app.use((req, res, next) => {
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+  },
+});
 
-app.listen(PORT, "0.0.0.0", () => {
+io.on("connection", (socket) => {
+  console.log("Chat client connected");
+
+  socket.on("chatMessage", (payload, acknowledge) => {
+    const rejectMessage = (message) => {
+      if (typeof acknowledge === "function") {
+        acknowledge({ ok: false, error: message });
+      }
+    };
+
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      rejectMessage("A username and message are required.");
+      return;
+    }
+
+    const username = typeof payload.username === "string" ? payload.username.trim() : "";
+    const message = typeof payload.message === "string" ? payload.message.trim() : "";
+
+    if (!username || username.length > 24 || /[\u0000-\u001f\u007f]/.test(username)) {
+      rejectMessage("Username must be between 1 and 24 characters.");
+      return;
+    }
+
+    if (!message || message.length > 500) {
+      rejectMessage("Message must be between 1 and 500 characters.");
+      return;
+    }
+
+    io.emit("chatMessage", {
+      username,
+      message,
+      sentAt: new Date().toISOString(),
+    });
+
+    if (typeof acknowledge === "function") {
+      acknowledge({ ok: true });
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Chat client disconnected");
+  });
+});
+
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

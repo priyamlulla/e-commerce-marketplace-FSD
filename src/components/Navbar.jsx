@@ -16,6 +16,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         <ul className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
           <li><a href="#home" className="hover:text-indigo-600">Home</a></li>
           <li><a href="products.html" className="hover:text-indigo-600">Products</a></li>
+          <li><a href="chat.html" className="hover:text-indigo-600">Live chat</a></li>
           <li><a href="#categories" className="hover:text-indigo-600">Categories</a></li>
           <li><a href="login.html" className="hover:text-indigo-600">Login</a></li>
           <li><a href="register.html" className="hover:text-indigo-600">Register</a></li>
@@ -64,6 +65,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         <ul className="flex flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700">
           <li><a href="#home" className="mobile-link block rounded-lg px-3 py-2 hover:bg-slate-50" onClick={() => setIsMobileMenuOpen(false)}>Home</a></li>
           <li><a href="products.html" className="mobile-link block rounded-lg px-3 py-2 hover:bg-slate-50" onClick={() => setIsMobileMenuOpen(false)}>Products</a></li>
+          <li><a href="chat.html" className="mobile-link block rounded-lg px-3 py-2 hover:bg-slate-50" onClick={() => setIsMobileMenuOpen(false)}>Live chat</a></li>
           <li><a href="#categories" className="mobile-link block rounded-lg px-3 py-2 hover:bg-slate-50" onClick={() => setIsMobileMenuOpen(false)}>Categories</a></li>
           <li><a href="login.html" className="mobile-link block rounded-lg px-3 py-2 hover:bg-slate-50" onClick={() => setIsMobileMenuOpen(false)}>Login</a></li>
           <li><a href="register.html" className="mobile-link block rounded-lg px-3 py-2 hover:bg-slate-50" onClick={() => setIsMobileMenuOpen(false)}>Register</a></li>
